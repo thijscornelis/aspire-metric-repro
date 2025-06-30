@@ -1,5 +1,6 @@
 
 using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
 
 namespace WebApplication1
 {
@@ -8,6 +9,9 @@ namespace WebApplication1
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var resource =
+                ResourceBuilder.CreateDefault()
+                    .AddService("MyCustomServiceName", serviceInstanceId: Environment.MachineName);
 
             // Add services to the container.
 
@@ -18,6 +22,7 @@ namespace WebApplication1
 
             builder.Services.AddOpenTelemetry().WithMetrics(options =>
             {
+                options.SetResourceBuilder(resource);
                 options.AddAspNetCoreInstrumentation();
                 options.AddHttpClientInstrumentation();
                 options.AddOtlpExporter();
